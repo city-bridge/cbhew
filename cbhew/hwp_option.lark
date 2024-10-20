@@ -1,0 +1,12 @@
+// hwpファイル内の[OPTIONS_xxx]の1行分パース
+// sample data
+//  [A|AAA|AAAAA][B|BBB|BBB|BBB|BBB]
+?start           : options
+options          : ((" ")* option)+ ("\n")*
+option           : "[" (("|")? value)+ "]"
+value            :  SIGNED_NUMBER | FLOAT | EMPTY_STRING | "\"" ESCAPED_STRING "\"" | KEY_STRING
+SIGNED_NUMBER    : /\-?[0-9]+/
+%import common.FLOAT
+ESCAPED_STRING   : /([^"])+/
+EMPTY_STRING     : "\"\""
+KEY_STRING       : /[^\|\]"]+/
