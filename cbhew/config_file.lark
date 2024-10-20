@@ -1,4 +1,9 @@
+// .hws .hwpファイルのパース用
 // カテゴリと内容で解析し内容をTableとして解析(Transformerを使用)
+// sample data
+//  [category_name]
+//  value value value
+//  value value value
 ?start            :root
 root              : config+
 config            : "[" category_name "]\n" contents?

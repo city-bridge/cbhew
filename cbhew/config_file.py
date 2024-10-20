@@ -1,4 +1,4 @@
-''' .hew .hwsファイルを読み込むためのモジュール
+''' .hws .hwpファイルを読み込むためのモジュール
 '''
 from lark import Lark
 from lark import Transformer
@@ -56,7 +56,7 @@ _parser = Lark(str(pkgutil.get_data('cbhew', 'config_file.lark'), encoding='utf-
                transformer=ConfigTransformer())
 
 
-def load(path):
+def load(path:str)->dict:
     """fileを読み込んでparseしてdictに変換
     """
     config_list = None
