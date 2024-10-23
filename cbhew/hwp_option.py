@@ -8,8 +8,6 @@ class HwpOptionTransformer(Transformer):
     data:dict = {}
     now_category:str = None
     def options(self,tree):
-        print("trans options",tree)
-
         return tree
 
     def option(self,tree):
@@ -40,7 +38,13 @@ _parser = Lark(str(pkgutil.get_data('cbhew', 'hwp_option.lark'), encoding='utf-8
 
 
 def parse(option_data_text:str)->dict:
-    """fileを読み込んでparseしてdictに変換
+    """option textを読み込んでparseしてdictに変換
+
+    Args:
+        option_data_text (str): option text
+
+    Returns:
+        dict: 解析結果
     """
     return _parser.parse(option_data_text)
 

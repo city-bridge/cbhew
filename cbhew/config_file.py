@@ -55,9 +55,25 @@ _parser = Lark(str(pkgutil.get_data('cbhew', 'config_file.lark'), encoding='utf-
                parser='lalr',
                transformer=ConfigTransformer())
 
+def parse(config_text:str)->dict:
+    """config textを読み込んでparseしてdictに変換
+
+    Args:
+        config_text (str): config text
+
+    Returns:
+        dict: 解析結果
+    """
+    return _parser.parse(config_text)
 
 def load(path:str)->dict:
     """fileを読み込んでparseしてdictに変換
+
+    Args:
+        path (str): config file path
+
+    Returns:
+        dict: 解析結果
     """
     config_list = None
     with open(path, encoding="s-jis") as file:

@@ -5,10 +5,10 @@ import cbhew.hwp_option as hwp_option
 
 class HwpParser:
     
-    def load_hwp(self, hwp_text):
-        """hwpのテキストからパース
+    def load_hwp(self, hwp_path:str):
+        """hwpのパスからパース
         """
-        self.root = config_file.load(hwp_text)
+        self.root = config_file.load(hwp_path)
 
     def get_category_contents_table(self,category_name:str)->list:
         """指定のカテゴリを2次元配列で取得
@@ -66,9 +66,7 @@ class HwpParser:
         options_xxx = self.get_options_xxx(conf_name)
         for options_xxx_line in options_xxx:
             try:
-                print("fdsafsda:",options_xxx_line["data"])
                 options = hwp_option.parse(options_xxx_line["data"])
-                print("options:",options)
                 for values in options:
                     if values[0] == "S" and values[1] == "DEFINE":
                         val = values[2:]
