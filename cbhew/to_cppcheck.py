@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from cbhew.project_loader import ProjectLoader
 
 def main(hws_path:str,output_path:str,replace:dict={}):
-    """ .hwpファイルからcppcheck gui用の設定ファイル出力
+    """ .hwsファイルからcppcheck gui用の設定ファイル出力
 
     Args:
         hws_path (str): プロジェクトのパス
@@ -18,6 +18,12 @@ def main(hws_path:str,output_path:str,replace:dict={}):
     to_cppcheck(output_path,hws_configs)
     
 def to_cppcheck(output_dir_path_str:str, hws_configs:list):
+    """cppcheck gui用の設定ファイル出力
+
+    Args:
+        output_dir_path_str (str): 出力先ディレクトリ
+        hws_configs (list): hwsの設定リスト
+    """
     out_base = pathlib.Path(output_dir_path_str)
     out_base.mkdir(exist_ok=True)
 
@@ -28,7 +34,6 @@ def to_cppcheck(output_dir_path_str:str, hws_configs:list):
         if includedir_ele == None:
             includedir_ele = ET.SubElement(root,"includedir")
         for inc_path in conf["include"]:
-            print(inc_path)
             dir_ele = ET.SubElement(includedir_ele,"dir")
             dir_ele.attrib["name"] = inc_path
 
@@ -53,11 +58,24 @@ def to_cppcheck(output_dir_path_str:str, hws_configs:list):
         tree.write(str(out_name))
 
 def load_base_project()->ET.Element:
+    """ベースプロジェクト読み込み
+
+    Returns:
+        ET.Element: プロジェクトデータ
+    """
     xml_bytes = pkgutil.get_data('cbhew', 'baseproject.cppcheck')
     xml_text = str(xml_bytes,encoding='utf-8')
     return ET.fromstring(xml_text)
 
 def to_src_dir_list(file_list:list)->list:
+    """ファイルリストからディレクトリリストを取得
+
+    Args:
+        file_list (list): ファイルリスト
+
+    Returns:
+        list: ディレクトリリスト
+    """
     ret = []
     for file_path in file_list:
         dir_path = str(pathlib.Path(file_path).parent)
