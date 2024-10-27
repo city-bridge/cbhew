@@ -37,6 +37,20 @@ class HwpParser:
         """
         table = self.get_category_contents_table("DATABASE_VERSION")
         return table[0][0]
+    
+    def get_project_details(self)->dict:
+        """[PROJECT_DETAILS]の内容取得
+        """
+        key_list = ["name","project_directory","hwp_path","engin", "standard","application","cpu_type","cpu_sub_type"]
+        project_details = self.get_category_contents_dict_list("PROJECT_DETAILS", key_list)
+        return project_details[0]
+    
+    def get_project_files(self)->list:
+        """[PROJECT_FILES]の内容取得
+        """
+        key_list = ["path","user","file_type","type"]
+        project_files = self.get_category_contents_dict_list("PROJECT_FILES", key_list)
+        return project_files
 
     def get_configurations(self)->list:
         """[CONFIGURATIONS]の内容取得
