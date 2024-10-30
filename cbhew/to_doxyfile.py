@@ -3,34 +3,36 @@ import pkgutil
 from cbhew.project_loader import ProjectLoader
 from cbhew.doxyfile import DoxyFile
 
-def main(hws_path:str,output_path:str,replace:dict={},base_doxyfile:str=None):
+def main(hws_path: str, output_path: str, replace: dict = None, base_doxyfile: str = None):
     """ .hwsファイルからcppcheck gui用の設定ファイル出力
 
     Args:
         hws_path (str): プロジェクトのパス
-        replace (dict): 置換用の辞書
+        output_path (str): 出力先ディレクトリのパス
+        replace (dict, optional): 置換用の辞書
+        base_doxyfile (str, optional): ベースとなるDoxyfileのパス
     """
     project_loader = ProjectLoader()
     project_loader.set_replace_dict(replace)
     project_loader.load_project(hws_path)
 
     hws_configs = project_loader.get_all_configs()
-    to_doxyfiles(output_path,hws_configs)
+    to_doxyfiles(output_path, hws_configs, base_doxyfile)
     
-def to_doxyfiles(output_dir_path_str:str, hws_configs:list,base_doxyfile:str=None):
+def to_doxyfiles(output_path: str, hws_configs: list, base_doxyfile: str = None):
     """DoxyFileファイル出力
 
     Args:
-        output_dir_path_str (str): 出力先ディレクトリ
+        output_path (str): 出力先ディレクトリのパス
         hws_configs (list): hwsの設定リスト
-        base_doxyfile (str): ベースとなるDoxyFileのパス
+        base_doxyfile (str, optional): ベースとなるDoxyfileのパス
     """
-    out_base = pathlib.Path(output_dir_path_str)
-    out_base.mkdir(exist_ok=True)
-
-    for conf in hws_configs:
-        out_file = out_base / "Doxyfile_{}".format(conf["name"])
-        to_doxyfile(str(out_file),conf,base_doxyfile)
+    output_dir_path = pathlib.Path(output_path)
+    output_dir_path.mkdir(parents=True, exist_ok=True)
+    
+    for config in hws_configs:
+        out_file = output_dir_path / "Doxyfile_{}".format(config["name"])
+        to_doxyfile(str(out_file), config, base_doxyfile)
 
 def to_doxyfile(output_file_path:str,hws_config:dict,base_doxyfile:str=None):
     """ DoxyFileファイル出力

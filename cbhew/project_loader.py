@@ -17,6 +17,8 @@ class ProjectLoader:
         Args:
             replace (dict): 置換用の辞書
         """
+        if replace is None:
+            replace = {}
         self.replace_dict = replace
 
     def load_project(self, hws_path: str):
