@@ -13,6 +13,8 @@ class HwpParser:
     def get_category_contents_table(self,category_name:str)->list:
         """指定のカテゴリを2次元配列で取得
         """
+        if category_name not in self.root:
+            return []
         return self.root[category_name]
 
     def get_category_contents_dict_list(self,category_name:str,key_list:list)->list:

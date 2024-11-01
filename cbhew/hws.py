@@ -12,11 +12,18 @@ class HwsParser:
         """
         self.root = config_file.load(hws_path)
 
+    def get_category_contents_table(self,category_name:str)->list:
+        """指定のカテゴリを2次元配列で取得
+        """
+        if category_name not in self.root:
+            return []
+        return self.root[category_name]
+
     def get_category_contents_dict_list(self,category_name,key_list)->list:
         """指定のカテゴリを2次元配列で取得し、列に名前を付ける
         """
         result = []        
-        table = self.root[category_name]
+        table = self.get_category_contents_table(category_name)
         for row in table:
             col_dict = {}
             for key in key_list:
