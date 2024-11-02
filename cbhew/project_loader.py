@@ -68,10 +68,15 @@ class ProjectLoader:
             replace["$(PROJDIR)"] = project_details["project_directory"]
             project_files = hwp.get_project_files()
             files = [x["path"] for x in project_files]
+            db_ver = hwp.get_database_version()
             for conf in hwp.get_configurations():
-                options = hwp.get_options_xxx_ana(conf["name"])
+                replace["$(CONFIGDIR)"] = conf["path"]
+                if db_ver == "1.0":
+                    options = hwp.analyze_config_ver1(conf["name"])
+                else:
+                    options = hwp.analyze_config_ver2(conf["name"])
                 result.append({
-                    "name":"{}_{}_{}".format(hws_name,project["name"],conf["name"]),
+                    "name":"{}_{}_{}".format(hws_name, project["name"], conf["name"]),
                     "include":self._replace_path_list(options["INCLUDE"],replace),
                     "define":self._replace_path_list(options["DEFINE"],replace),
                     "preinclude":self._replace_path_list(options["PREINCLUDE"],replace),
