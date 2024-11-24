@@ -1,5 +1,6 @@
 import pathlib
 import json
+import copy
 from cbhew.project_loader import ProjectLoader
 
 
@@ -82,19 +83,8 @@ def conv_config_hwp_vscode(hwp_conf:dict, base_vscode_config:dict = None)->dict:
     Returns:
         dict: VSCode用の設定ファイル
     """
-    if base_vscode_config is not None:
-        conf_dict = base_vscode_config.copy()
-    else:
-        conf_dict = {
-            "name":hwp_conf["name"],
-            "includePath":[
-                "${workspaceFolder}/**",
-            ],
-            "forcedInclude":[],
-            "defines":[],
-            "cStandard": "gnu17",
-        }
-
+    conf_dict = _create_base_vscode_config(base_vscode_config)
+    conf_dict["name"] = hwp_conf["name"]
     for path in hwp_conf["include"]:
         path = _replace_path(path)
         conf_dict["includePath"].append(path)
@@ -116,3 +106,28 @@ def _replace_path(path:str)->str:
 
     path = path.replace("\\","/")
     return path
+
+def _create_base_vscode_config(base_vscode_config:dict = None) -> dict:
+    """VSCode用の設定ファイルのテンプレートを作成
+
+    Returns:
+        dict: VSCode用の設定ファイルのテンプレート
+    """
+    conf_dict = {}
+    if base_vscode_config is not None:
+        conf_dict = copy.deepcopy(base_vscode_config)
+
+    default_config = {
+        "name":"None",
+        "includePath":[
+            "${workspaceFolder}/**",
+        ],
+        "forcedInclude":[],
+        "defines":[],
+        "cStandard": "gnu17",
+    }
+    for key in default_config:
+        if key not in conf_dict:
+            conf_dict[key] = default_config[key]
+
+    return conf_dict

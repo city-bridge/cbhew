@@ -1,4 +1,5 @@
 import pathlib
+import copy
 from cbhew.hwp import HwpParser
 from cbhew.hws import HwsParser
 
@@ -46,7 +47,7 @@ class ProjectLoader:
         Returns:
             dict: 置換用の辞書
         """
-        replace = self.replace_dict.copy()
+        replace = copy.deepcopy(self.replace_dict)
         work_space = self.hws.get_wordspace_detailes()
         replace["$(WORKSPDIR)"] = work_space["work_space_path"]
         for place in self.hws.get_custom_place_holders():
