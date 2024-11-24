@@ -3,20 +3,26 @@ import json
 from cbhew.project_loader import ProjectLoader
 
 
-def main(hws_path:str,output_path:str,replace:dict={}):
+def main(hws_path:str, output_path:str ,replace:dict = None, base_vscode_config_path:str = None):
     """ .hwsファイルからVSCode用の設定ファイル出力
 
     Args:
         hws_path (str): プロジェクトのパス
         output_path (str): 出力先のファイルのパス
         replace (dict): 置換用の辞書
+        base_vscode_config_path (str): config1つ分の基本設定のパス
     """
     project_loader = ProjectLoader()
     project_loader.set_replace_dict(replace)
     project_loader.load_project(hws_path)
 
+    base_vscode_config = None
+    if base_vscode_config_path is not None:
+        with open(base_vscode_config_path, "r",encoding='utf-8') as f:
+            base_vscode_config = json.load(f)
+    
     hws_configs = project_loader.get_all_configs()
-    out_json_dict = hew_config_to_vscode(hws_configs)
+    out_json_dict = hew_config_to_vscode(hws_configs, base_vscode_config)
     output_vscode_setting(output_path,out_json_dict)
 
 
@@ -45,57 +51,49 @@ def output_vscode_setting(output_dir_path:str,config:dict):
         f.write(out_json_txt)
 
 
-def hew_config_to_vscode(config_list:list)->dict:
+def hew_config_to_vscode(config_list:list, base_vscode_config:dict = None)->dict:
     """HEWの設定をVSCode用の設定に変換
 
     Args:
         config_list (list): HEWの設定
+        base_vscode_config (dict): config1つ分の基本設定
 
     Returns:
         dict: VSCode用の設定
     """
+    vscode_configurations = []
+    for hwp_conf in config_list:
+        vscode_configurations.append(conv_config_hwp_vscode(hwp_conf, base_vscode_config))
+    
     json_dict = {
         "version":4,
-        "configurations":conv_config_list_hwp_vscode(config_list)
+        "configurations":vscode_configurations
     }
     return json_dict
 
 
-def conv_config_list_hwp_vscode(hwp_conf_list:list)->list:
+def conv_config_hwp_vscode(hwp_conf:dict, base_vscode_config:dict = None)->dict:
     """hwpファイルを読み込んでVSCode用の設定ファイルに変換
 
     Args:
-
-        hwp_conf_list (list): _description_
-
-    Returns:
-        list: VSCode用の設定ファイル
-    """
-    ret = []
-    for hwp_conf in hwp_conf_list:
-        ret.append(conv_config_hwp_vscode(hwp_conf))
-    return ret
-
-
-def conv_config_hwp_vscode(hwp_conf:dict)->dict:
-    """hwpファイルを読み込んでVSCode用の設定ファイルに変換
-
-    Args:
-
         hwp_conf (dict): _description_
+        base_vscode_config (dict): config1つ分の基本設定
 
     Returns:
         dict: VSCode用の設定ファイル
     """
-    conf_dict = {
-        "name":hwp_conf["name"],
-        "includePath":[
-            "${workspaceFolder}/**",
-        ],
-        "forcedInclude":[],
-        "defines":[],
-        "cStandard": "gnu17",
-    }
+    if base_vscode_config is not None:
+        conf_dict = base_vscode_config.copy()
+    else:
+        conf_dict = {
+            "name":hwp_conf["name"],
+            "includePath":[
+                "${workspaceFolder}/**",
+            ],
+            "forcedInclude":[],
+            "defines":[],
+            "cStandard": "gnu17",
+        }
 
     for path in hwp_conf["include"]:
         path = _replace_path(path)
@@ -111,7 +109,6 @@ def _replace_path(path:str)->str:
 
     Args:
         path (str): 対象のパス
-        replace (dict): 置換用の辞書
 
     Returns:
         str: 置換後のパス
