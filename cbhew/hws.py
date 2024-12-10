@@ -17,6 +17,10 @@ class HwsParser:
         """
         if category_name not in self.root:
             return []
+        
+        if self.root[category_name] is None:
+            return []
+
         return self.root[category_name]
 
     def get_category_contents_dict_list(self,category_name,key_list)->list:
